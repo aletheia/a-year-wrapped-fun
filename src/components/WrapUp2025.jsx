@@ -1,450 +1,577 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import './WrapUp2025.css';
 
-const WrapUp2025 = () => {
-  const [activeSlide, setActiveSlide] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(true);
+const TOTAL_SLIDES = 10;
 
-  const slides = [
-    { id: 'intro', title: 'INTRO' },
-    { id: 'sleep', title: 'SLEEP' },
-    { id: 'breathing', title: 'BREATHING' },
-    { id: 'hydration', title: 'HYDRATION' },
-    { id: 'carbon', title: 'CO2' },
-    { id: 'keyboard', title: 'KEYS' },
-    { id: 'email', title: 'EMAIL' },
-    { id: 'meetings', title: 'MEETINGS' },
-    { id: 'certs', title: 'CERTS' },
-    { id: 'wisdom', title: 'WISDOM' },
-  ];
+const Particles = () => {
+  const particles = Array.from({ length: 15 }, (_, i) => ({
+    id: i,
+    left: `${Math.random() * 100}%`,
+    delay: `${Math.random() * 8}s`,
+    duration: `${Math.random() * 4 + 6}s`,
+  }));
 
-  useEffect(() => {
-    setIsAnimating(true);
-    const timer = setTimeout(() => setIsAnimating(false), 600);
-    return () => clearTimeout(timer);
-  }, [activeSlide]);
-
-  const nextSlide = () => setActiveSlide((prev) => (prev + 1) % slides.length);
-  const prevSlide = () => setActiveSlide((prev) => (prev - 1 + slides.length) % slides.length);
-
-  const CircularProgress = ({ percentage, size = 200, strokeWidth = 12, color = '#00ff88', label, sublabel }) => {
-    const radius = (size - strokeWidth) / 2;
-    const circumference = radius * 2 * Math.PI;
-    const offset = circumference - (percentage / 100) * circumference;
-
-    return (
-      <div className="circular-progress" style={{ width: size, height: size }}>
-        <svg width={size} height={size}>
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            fill="none"
-            stroke="rgba(255,255,255,0.1)"
-            strokeWidth={strokeWidth}
-          />
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            fill="none"
-            stroke={color}
-            strokeWidth={strokeWidth}
-            strokeDasharray={circumference}
-            strokeDashoffset={offset}
-            strokeLinecap="round"
-            style={{
-              transform: 'rotate(-90deg)',
-              transformOrigin: '50% 50%',
-              transition: 'stroke-dashoffset 1s ease-out',
-              filter: `drop-shadow(0 0 10px ${color})`,
-            }}
-          />
-        </svg>
-        <div className="circular-progress-text">
-          <span className="percentage">{percentage}%</span>
-          {label && <span className="label">{label}</span>}
-          {sublabel && <span className="sublabel">{sublabel}</span>}
-        </div>
-      </div>
-    );
-  };
-
-  const BarChart = ({ data }) => (
-    <div className="bar-chart">
-      {data.map((item, index) => (
-        <div key={index} className="bar-item" style={{ animationDelay: `${index * 0.1}s` }}>
-          <div className="bar-label">{item.label}</div>
-          <div className="bar-container">
-            <div
-              className="bar-fill"
-              style={{
-                width: `${item.value}%`,
-                background: item.color || 'linear-gradient(90deg, #00ff88, #00ccff)',
-              }}
-            />
-            <span className="bar-value">{item.display || `${item.value}%`}</span>
-          </div>
-        </div>
+  return (
+    <div className="particles">
+      {particles.map((p) => (
+        <div
+          key={p.id}
+          className="particle"
+          style={{
+            left: p.left,
+            animationDelay: p.delay,
+            animationDuration: p.duration,
+          }}
+        />
       ))}
     </div>
   );
+};
 
-  const CountUp = ({ end, suffix = '', prefix = '', decimals = 0 }) => {
-    const [count, setCount] = useState(0);
-    const [hasAnimated, setHasAnimated] = useState(false);
+const AnimatedCounter = ({ target, isActive }) => {
+  const [count, setCount] = useState(0);
+  const hasAnimated = useRef(false);
 
-    useEffect(() => {
-      if (hasAnimated) return;
+  useEffect(() => {
+    if (!isActive || hasAnimated.current) return;
+    hasAnimated.current = true;
 
-      let start = 0;
-      const duration = 1500;
-      const increment = end / (duration / 16);
+    const duration = 2000;
+    const start = performance.now();
 
-      const timer = setInterval(() => {
-        start += increment;
-        if (start >= end) {
-          setCount(end);
-          setHasAnimated(true);
-          clearInterval(timer);
-        } else {
-          setCount(decimals > 0 ? parseFloat(start.toFixed(decimals)) : Math.floor(start));
-        }
-      }, 16);
+    const update = (currentTime) => {
+      const elapsed = currentTime - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(eased * target));
 
-      return () => clearInterval(timer);
-    }, [end, hasAnimated, decimals]);
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      }
+    };
 
-    const displayValue = decimals > 0
-      ? count.toFixed(decimals)
-      : count.toLocaleString();
+    requestAnimationFrame(update);
+  }, [isActive, target]);
 
-    return (
-      <span className="count-up">
-        {prefix}{displayValue}{suffix}
-      </span>
-    );
-  };
-
-  const renderSlide = () => {
-    switch (slides[activeSlide].id) {
-      case 'intro':
-        return (
-          <div className={`slide slide-intro ${isAnimating ? 'animating' : ''}`}>
-            <div className="glitch-container">
-              <h1 className="glitch" data-text="LUCA'S">LUCA'S</h1>
-              <h1 className="year-text">2025</h1>
-              <h1 className="glitch wrapped-text" data-text="WRAPPED">WRAPPED</h1>
-            </div>
-            <p className="tagline">Because you absolutely needed to know this</p>
-            <div className="scroll-hint">
-              <span>Swipe to waste more time</span>
-              <div className="arrow-down">&#8595;</div>
-            </div>
-          </div>
-        );
-
-      case 'sleep':
-        return (
-          <div className={`slide slide-sleep ${isAnimating ? 'animating' : ''}`}>
-            <div className="slide-header">
-              <span className="category-tag">SLEEP PERFORMANCE</span>
-            </div>
-            <div className="big-number">
-              <CountUp end={2555} /> <span className="unit">ore</span>
-            </div>
-            <div className="stat-comparison">
-              <span className="target">Target: 2,920</span>
-            </div>
-            <CircularProgress
-              percentage={87.5}
-              size={180}
-              color="#a855f7"
-              label="Efficienza"
-              sublabel="event-driven sleep"
-            />
-            <div className="achievement-badge">
-              <span className="badge-icon">&#127942;</span>
-              <span className="badge-text">Svegliato PRIMA della sveglia: <strong>23 volte</strong></span>
-              <span className="badge-subtext">Le altre 342? Snooze come microservizio.</span>
-            </div>
-          </div>
-        );
-
-      case 'breathing':
-        return (
-          <div className={`slide slide-breathing ${isAnimating ? 'animating' : ''}`}>
-            <div className="slide-header">
-              <span className="category-tag">RESPIRATORY ANALYTICS</span>
-            </div>
-            <div className="big-number breathing-number">
-              <CountUp end={7884000} />
-              <span className="unit">respiri</span>
-            </div>
-            <div className="stats-grid">
-              <div className="stat-card">
-                <div className="stat-value green">0</div>
-                <div className="stat-label">Downtime</div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-value">99.999%</div>
-                <div className="stat-label">Uptime</div>
-                <div className="stat-note">(0.001% = prezzi API OpenAI)</div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-value">15&#8594;40</div>
-                <div className="stat-label">Respiri/min</div>
-                <div className="stat-note">Scalabile durante call investitori</div>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'hydration':
-        return (
-          <div className={`slide slide-hydration ${isAnimating ? 'animating' : ''}`}>
-            <div className="slide-header">
-              <span className="category-tag">HYDRATION METRICS</span>
-            </div>
-            <div className="big-number">
-              <CountUp end={730} /> <span className="unit">litri</span>
-            </div>
-            <div className="kubernetes-quote">
-              "Ho implementato un sistema di idratazione basato su Kubernetes. Ogni bicchiere è un pod. Il mio corpo è il cluster. Ad ogni nuovo aggiornamento devo distruggerlo e ricrearlo."
-            </div>
-            <div className="water-breakdown">
-              <div className="water-bar">
-                <div className="water-segment coding" style={{ width: '40%' }}>
-                  <span>40%</span>
-                  <small>Coding</small>
-                </div>
-                <div className="water-segment meetings" style={{ width: '35%' }}>
-                  <span>35%</span>
-                  <small>Riunioni inutili</small>
-                </div>
-                <div className="water-segment decisions" style={{ width: '25%' }}>
-                  <span>25%</span>
-                  <small>Decisioni discutibili</small>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'carbon':
-        return (
-          <div className={`slide slide-carbon ${isAnimating ? 'animating' : ''}`}>
-            <div className="slide-header">
-              <span className="category-tag">CARBON FOOTPRINT</span>
-              <span className="edition-tag">Working Edition</span>
-            </div>
-            <div className="big-number carbon-number">
-              <CountUp end={847} /> <span className="unit">kg CO&#8322;</span>
-            </div>
-            <BarChart
-              data={[
-                { label: '"Hai un minuto?"', value: 37, display: '312 kg', color: 'linear-gradient(90deg, #ff6b6b, #ff8e8e)' },
-                { label: 'Code review altrui', value: 22, display: '189 kg', color: 'linear-gradient(90deg, #ffd93d, #ffe066)' },
-                { label: 'Frustrazione vendor', value: 18, display: '156 kg', color: 'linear-gradient(90deg, #6bcb77, #8edd8e)' },
-                { label: '"Quick sync" 90min', value: 15, display: '127 kg', color: 'linear-gradient(90deg, #4d96ff, #6ba8ff)' },
-                { label: 'Imprecazioni', value: 8, display: '63 kg', color: 'linear-gradient(90deg, #a855f7, #c084fc)' },
-              ]}
-            />
-          </div>
-        );
-
-      case 'keyboard':
-        return (
-          <div className={`slide slide-keyboard ${isAnimating ? 'animating' : ''}`}>
-            <div className="slide-header">
-              <span className="category-tag">KEYSTROKE ECONOMY</span>
-            </div>
-            <div className="big-number">
-              <CountUp end={4.2} suffix="M" decimals={1} /> <span className="unit">tasti premuti</span>
-            </div>
-            <div className="key-stats">
-              <div className="key-stat featured">
-                <div className="key-visual">TAB</div>
-                <div className="key-info">
-                  <span className="key-count">890,000</span>
-                  <span className="key-percentage">21%</span>
-                  <span className="key-description">Benvenuti nell'era dell'AI, dove accettare suggerimenti è diventato il nuovo scrivere codice</span>
-                </div>
-              </div>
-              <div className="key-stat">
-                <div className="key-visual small">Ctrl+Z</div>
-                <div className="key-info">
-                  <span className="key-count">12,847</span>
-                  <span className="key-description">La storia della mia vita</span>
-                </div>
-              </div>
-              <div className="key-stat classified">
-                <div className="key-visual small">Ctrl+C/V</div>
-                <div className="key-info">
-                  <span className="key-count classified-text">CLASSIFIED</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'email':
-        return (
-          <div className={`slide slide-email ${isAnimating ? 'animating' : ''}`}>
-            <div className="slide-header">
-              <span className="category-tag">EMAIL EFFICIENCY</span>
-            </div>
-            <div className="funnel">
-              <div className="funnel-step" style={{ width: '100%' }}>
-                <span className="funnel-number">2,847</span>
-                <span className="funnel-label">Ricevute</span>
-              </div>
-              <div className="funnel-arrow">&#8595;</div>
-              <div className="funnel-step" style={{ width: '70%' }}>
-                <span className="funnel-number">312</span>
-                <span className="funnel-label">Lette</span>
-              </div>
-              <div className="funnel-arrow">&#8595;</div>
-              <div className="funnel-step" style={{ width: '40%' }}>
-                <span className="funnel-number">47</span>
-                <span className="funnel-label">Con risposta</span>
-              </div>
-              <div className="funnel-arrow">&#8595;</div>
-              <div className="funnel-step final" style={{ width: '15%' }}>
-                <span className="funnel-number">3</span>
-                <span className="funnel-label">Utili</span>
-              </div>
-            </div>
-            <div className="conversion-badge">
-              <span>Conversion rate: 0.1%</span>
-              <span className="growth-hack">Growth hacking at its finest.</span>
-            </div>
-          </div>
-        );
-
-      case 'meetings':
-        return (
-          <div className={`slide slide-meetings ${isAnimating ? 'animating' : ''}`}>
-            <div className="slide-header">
-              <span className="category-tag">MEETING ROI</span>
-            </div>
-            <div className="big-number">
-              <CountUp end={847} /> <span className="unit">ore in meeting</span>
-            </div>
-            <div className="meeting-stats">
-              <div className="meeting-stat">
-                <CircularProgress percentage={84} size={120} color="#ff6b6b" />
-                <span className="meeting-label">Potevano essere email</span>
-              </div>
-              <div className="meeting-stat">
-                <CircularProgress percentage={78} size={120} color="#ffd93d" />
-                <span className="meeting-label">Potevano essere un Teams</span>
-              </div>
-              <div className="meeting-stat">
-                <CircularProgress percentage={65} size={120} color="#6bcb77" />
-                <span className="meeting-label">Potevano non esistere</span>
-              </div>
-              <div className="meeting-stat nda">
-                <div className="nda-badge">[NDA]</div>
-                <span className="meeting-label">Meeting produttivi</span>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'certs':
-        return (
-          <div className={`slide slide-certs ${isAnimating ? 'animating' : ''}`}>
-            <div className="slide-header">
-              <span className="category-tag">CERTIFICAZIONI 2025</span>
-            </div>
-            <div className="cert-grid">
-              <div className="cert-card">
-                <div className="cert-icon">&#9989;</div>
-                <div className="cert-name">Certified Eye-Roller</div>
-                <div className="cert-context">durante pitch deck</div>
-              </div>
-              <div className="cert-card">
-                <div className="cert-icon">&#129351;</div>
-                <div className="cert-name">Black Belt</div>
-                <div className="cert-context">"Sei in muto"</div>
-              </div>
-              <div className="cert-card">
-                <div className="cert-icon">&#127891;</div>
-                <div className="cert-name">Master</div>
-                <div className="cert-context">Annuire Pensando Ad Altro</div>
-              </div>
-              <div className="cert-card featured">
-                <div className="cert-icon">&#127894;</div>
-                <div className="cert-name">PhD</div>
-                <div className="cert-context">Procrastination</div>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'wisdom':
-        return (
-          <div className={`slide slide-wisdom ${isAnimating ? 'animating' : ''}`}>
-            <div className="slide-header">
-              <span className="category-tag">La più grande lezione imparata</span>
-            </div>
-            <div className="quote-container">
-              <blockquote>
-                "L'anno che sta arrivando, tra un anno passerà.
-                <br />
-                Io mi sto preparando, è questa la novità."
-              </blockquote>
-              <cite>— Lucio Dalla, 1979</cite>
-              <span className="quote-note">che aveva già capito tutto</span>
-            </div>
-            <div className="final-wish">
-              <p className="wish-text">
-                <strong>Che il 2026 sia leggero.</strong>
-              </p>
-              <p className="wish-examples">
-                Leggero come un microservizio ben fatto.<br />
-                Leggero come un meeting cancellato.<br />
-                Leggero come quella sensazione quando il deploy va in prod al primo tentativo.
-              </p>
-            </div>
-            <div className="linkedin-reminder">
-              <span>Buon anno, e ricordati:</span>
-              <span className="linkedin-text">se non l'hai postato su LinkedIn, non è mai successo.</span>
-              <span className="rocket">&#128640;</span>
-            </div>
-            <div className="carbon-footer">
-              P.S. Questo wrap-up è stato generato con un carbon footprint di circa 0.0003 kg di CO&#8322;. Prego.
-            </div>
-          </div>
-        );
-
-      default:
-        return null;
+  useEffect(() => {
+    if (!isActive) {
+      hasAnimated.current = false;
+      setCount(0);
     }
-  };
+  }, [isActive]);
+
+  return <>{count.toLocaleString('it-IT')}</>;
+};
+
+const ProgressFill = ({ width, isActive, color }) => {
+  const [currentWidth, setCurrentWidth] = useState(0);
+
+  useEffect(() => {
+    if (isActive) {
+      const timer = setTimeout(() => setCurrentWidth(width), 500);
+      return () => clearTimeout(timer);
+    } else {
+      setCurrentWidth(0);
+    }
+  }, [isActive, width]);
 
   return (
-    <div className="wrap-container">
-      <div className="noise-overlay" />
-      <div className="main-content">
-        {renderSlide()}
+    <div
+      className="progress-fill"
+      style={{ width: `${currentWidth}%`, background: color }}
+    />
+  );
+};
+
+const BreakdownBarFill = ({ width, isActive, color }) => {
+  const [currentWidth, setCurrentWidth] = useState(0);
+
+  useEffect(() => {
+    if (isActive) {
+      const timer = setTimeout(() => setCurrentWidth(width), 500);
+      return () => clearTimeout(timer);
+    } else {
+      setCurrentWidth(0);
+    }
+  }, [isActive, width]);
+
+  return (
+    <div
+      className="breakdown-bar-fill"
+      style={{ width: `${currentWidth}%`, background: color }}
+    />
+  );
+};
+
+const WrapUp2025 = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [showSwipeHint, setShowSwipeHint] = useState(true);
+  const touchStartY = useRef(0);
+
+  const goToSlide = useCallback((index) => {
+    if (isAnimating || index === currentSlide || index < 0 || index >= TOTAL_SLIDES) return;
+
+    setIsAnimating(true);
+    setCurrentSlide(index);
+
+    if (index > 0) setShowSwipeHint(false);
+
+    setTimeout(() => setIsAnimating(false), 600);
+  }, [isAnimating, currentSlide]);
+
+  const nextSlide = useCallback(() => goToSlide(currentSlide + 1), [goToSlide, currentSlide]);
+  const prevSlide = useCallback(() => goToSlide(currentSlide - 1), [goToSlide, currentSlide]);
+
+  useEffect(() => {
+    const handleWheel = (e) => {
+      if (e.deltaY > 0) nextSlide();
+      else prevSlide();
+    };
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowDown' || e.key === ' ') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        prevSlide();
+      }
+    };
+
+    const handleTouchStart = (e) => {
+      touchStartY.current = e.changedTouches[0].screenY;
+    };
+
+    const handleTouchEnd = (e) => {
+      const diff = touchStartY.current - e.changedTouches[0].screenY;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) nextSlide();
+        else prevSlide();
+      }
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: true });
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+    return () => {
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [nextSlide, prevSlide]);
+
+  return (
+    <div className="app-container">
+      <div
+        className="slides-wrapper"
+        style={{ transform: `translateY(-${currentSlide * 100}vh)` }}
+      >
+        {/* Slide 0: Intro */}
+        <div className={`slide slide-intro ${currentSlide === 0 ? 'active' : ''}`}>
+          <Particles />
+          <div className="slide-content">
+            <p className="slide-label">// 2025.wrapped()</p>
+            <h1 className="slide-title glitch" data-text="LUCA'S 2025 WRAPPED">
+              LUCA'S 2025 WRAPPED
+            </h1>
+            <p className="slide-subtitle">"Because you absolutely needed to know this"</p>
+            <div
+              className="achievement"
+              style={{ background: 'linear-gradient(135deg, var(--accent-magenta), var(--accent-purple))' }}
+            >
+              <span>v1.0.0 — Production Ready</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Slide 1: Sleep */}
+        <div className={`slide slide-sleep ${currentSlide === 1 ? 'active' : ''}`}>
+          <Particles />
+          <div className="slide-content">
+            <p className="slide-label">💤 sleep.performance</p>
+            <h2 className="slide-title" style={{ color: 'var(--accent-cyan)' }}>
+              SLEEP PERFORMANCE
+            </h2>
+            <div className="big-number" style={{ color: 'var(--accent-cyan)' }}>
+              <AnimatedCounter target={2555} isActive={currentSlide === 1} />
+            </div>
+            <p className="big-number-label">ore dormite (target: 2.920)</p>
+
+            <div className="progress-container">
+              <div className="progress-label">
+                <span>Efficienza</span>
+                <span>87,5%</span>
+              </div>
+              <div className="progress-bar">
+                <ProgressFill width={87.5} isActive={currentSlide === 1} color="var(--accent-cyan)" />
+              </div>
+            </div>
+
+            <div className="quote" style={{ borderColor: 'var(--accent-cyan)' }}>
+              "Ho ottimizzato il mio ciclo REM implementando un approccio event-driven al sonno. Ogni sogno è stato elaborato in modo asincrono."
+            </div>
+
+            <div className="achievement" style={{ border: '1px solid var(--accent-cyan)' }}>
+              <span>🏆 Svegliato PRIMA della sveglia: <strong>23 volte</strong></span>
+            </div>
+            <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '0.7rem', color: 'var(--text-secondary)', marginTop: '0.75rem' }}>
+              Le altre 342? Snooze come microservizio.
+            </p>
+          </div>
+        </div>
+
+        {/* Slide 2: Breath */}
+        <div className={`slide slide-breath ${currentSlide === 2 ? 'active' : ''}`}>
+          <Particles />
+          <div className="slide-content">
+            <p className="slide-label">🌬️ respiratory.analytics</p>
+            <h2 className="slide-title" style={{ color: 'var(--accent-purple)' }}>
+              RESPIRATORY ANALYTICS
+            </h2>
+            <div className="big-number" style={{ color: 'var(--accent-purple)' }}>
+              <AnimatedCounter target={7884000} isActive={currentSlide === 2} />
+            </div>
+            <p className="big-number-label">respiri effettuati con successo</p>
+
+            <div className="stats-grid">
+              <div className="stat-item">
+                <div className="stat-label">Downtime</div>
+                <div className="stat-value" style={{ color: 'var(--accent-green)' }}>Zero</div>
+                <div className="stat-label" style={{ marginTop: '0.25rem' }}>sul sistema respiratorio</div>
+              </div>
+              <div className="stat-item">
+                <div className="stat-label">Uptime</div>
+                <div className="stat-value" style={{ color: 'var(--accent-cyan)' }}>99.999%</div>
+                <div className="stat-label" style={{ marginTop: '0.25rem', fontSize: '0.6rem' }}>
+                  (quel 0.001% è quando ho visto i prezzi delle API di OpenAI)
+                </div>
+              </div>
+            </div>
+
+            <div className="quote" style={{ borderColor: 'var(--accent-purple)' }}>
+              <strong>Throughput medio:</strong> 15 respiri/minuto, scalabile fino a 40 durante le call con gli investitori
+            </div>
+          </div>
+        </div>
+
+        {/* Slide 3: Hydration */}
+        <div className={`slide slide-hydration ${currentSlide === 3 ? 'active' : ''}`}>
+          <Particles />
+          <div className="slide-content">
+            <p className="slide-label">💧 hydration.metrics</p>
+            <h2 className="slide-title" style={{ color: 'var(--accent-blue)' }}>
+              HYDRATION METRICS
+            </h2>
+            <div className="big-number" style={{ color: 'var(--accent-blue)' }}>
+              <AnimatedCounter target={730} isActive={currentSlide === 3} />
+            </div>
+            <p className="big-number-label">litri d'acqua consumati</p>
+
+            <div className="quote" style={{ borderColor: 'var(--accent-blue)', fontSize: '0.75rem' }}>
+              "Ho implementato un sistema di idratazione basato su Kubernetes. Ogni bicchiere è un pod. Il mio corpo è il cluster. Ad ogni nuovo aggiornamento devo distruggerlo e ricrearlo."
+            </div>
+
+            <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+              📊 Breakdown:
+            </p>
+
+            <ul className="breakdown-list">
+              <li className="breakdown-item">
+                <span className="breakdown-value" style={{ color: 'var(--accent-cyan)' }}>40%</span>
+                <div className="breakdown-bar">
+                  <BreakdownBarFill width={40} isActive={currentSlide === 3} color="var(--accent-cyan)" />
+                </div>
+                <span>durante coding session</span>
+              </li>
+              <li className="breakdown-item">
+                <span className="breakdown-value" style={{ color: 'var(--accent-yellow)' }}>35%</span>
+                <div className="breakdown-bar">
+                  <BreakdownBarFill width={35} isActive={currentSlide === 3} color="var(--accent-yellow)" />
+                </div>
+                <span>durante riunioni inutili</span>
+              </li>
+              <li className="breakdown-item">
+                <span className="breakdown-value" style={{ color: 'var(--accent-magenta)' }}>25%</span>
+                <div className="breakdown-bar">
+                  <BreakdownBarFill width={25} isActive={currentSlide === 3} color="var(--accent-magenta)" />
+                </div>
+                <span>per mandare giù decisioni discutibili</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Slide 4: Carbon */}
+        <div className={`slide slide-carbon ${currentSlide === 4 ? 'active' : ''}`}>
+          <Particles />
+          <div className="slide-content">
+            <p className="slide-label">🌍 carbon.footprint (Working Edition)</p>
+            <h2 className="slide-title" style={{ color: 'var(--accent-orange)' }}>
+              CARBON FOOTPRINT
+            </h2>
+            <div className="big-number" style={{ color: 'var(--accent-orange)' }}>
+              <AnimatedCounter target={847} isActive={currentSlide === 4} />
+            </div>
+            <p className="big-number-label">kg di CO2 emessi per attività lavorative</p>
+
+            <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '0.75rem', color: 'var(--text-secondary)', margin: '1rem 0 0.5rem' }}>
+              Di cui:
+            </p>
+
+            <div className="breakdown-list">
+              <div className="carbon-item">
+                <span className="carbon-value" style={{ color: 'var(--accent-orange)' }}>312 kg</span>
+                <span>Respiri pesanti durante ore di meeting estemporanei, non programmati, per "Hai un minuto?"</span>
+              </div>
+              <div className="carbon-item">
+                <span className="carbon-value" style={{ color: 'var(--accent-yellow)' }}>189 kg</span>
+                <span>Sospiri durante review del codice altrui</span>
+              </div>
+              <div className="carbon-item">
+                <span className="carbon-value" style={{ color: 'var(--accent-magenta)' }}>156 kg</span>
+                <span>Esalazioni di frustrazione verso i vendor</span>
+              </div>
+              <div className="carbon-item">
+                <span className="carbon-value" style={{ color: 'var(--accent-purple)' }}>127 kg</span>
+                <span>Sbuffi durante "quick sync" di 90 minuti</span>
+              </div>
+              <div className="carbon-item">
+                <span className="carbon-value" style={{ color: 'var(--accent-cyan)' }}>63 kg</span>
+                <span>Imprecazioni vaporizzate nell'etere</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Slide 5: Keystroke */}
+        <div className={`slide slide-keystroke ${currentSlide === 5 ? 'active' : ''}`}>
+          <Particles />
+          <div className="slide-content">
+            <p className="slide-label">⌨️ keystroke.economy</p>
+            <h2 className="slide-title" style={{ color: 'var(--accent-green)' }}>
+              KEYSTROKE ECONOMY
+            </h2>
+            <div className="big-number" style={{ color: 'var(--accent-green)' }}>4.2M</div>
+            <p className="big-number-label">tasti premuti</p>
+
+            <div className="stats-grid">
+              <div className="stat-item">
+                <div className="stat-label">TAB</div>
+                <div className="stat-value" style={{ color: 'var(--accent-cyan)' }}>890.000</div>
+                <div className="stat-label" style={{ marginTop: '0.5rem', fontSize: '0.6rem', lineHeight: 1.4 }}>
+                  (il 21% — benvenuti nell'era dell'AI, dove accettare suggerimenti è diventato il nuovo scrivere codice)
+                </div>
+              </div>
+              <div className="stat-item">
+                <div className="stat-label">Ctrl+Z</div>
+                <div className="stat-value" style={{ color: 'var(--accent-magenta)' }}>12.847</div>
+                <div className="stat-label" style={{ marginTop: '0.5rem', fontStyle: 'italic' }}>
+                  (che poi è la storia della mia vita)
+                </div>
+              </div>
+              <div className="stat-item" style={{ gridColumn: 'span 2' }}>
+                <div className="stat-label">Ctrl+C / Ctrl+V</div>
+                <div className="stat-value" style={{ color: 'var(--text-secondary)', fontFamily: "'JetBrains Mono', monospace", fontSize: '1rem', fontStyle: 'italic' }}>
+                  classified
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Slide 6: Email */}
+        <div className={`slide slide-email ${currentSlide === 6 ? 'active' : ''}`}>
+          <Particles />
+          <div className="slide-content">
+            <p className="slide-label">📧 email.efficiency</p>
+            <h2 className="slide-title" style={{ color: 'var(--accent-yellow)' }}>
+              EMAIL EFFICIENCY
+            </h2>
+
+            <div className="funnel">
+              <div className="funnel-step" style={{ width: '100%', background: 'linear-gradient(90deg, rgba(254,228,64,0.2), transparent)' }}>
+                <span className="funnel-number" style={{ color: 'var(--accent-yellow)' }}>2.847</span>
+                <span>email ricevute</span>
+              </div>
+              <div className="funnel-arrow">↓</div>
+              <div className="funnel-step" style={{ width: '85%', background: 'linear-gradient(90deg, rgba(0,245,212,0.2), transparent)' }}>
+                <span className="funnel-number" style={{ color: 'var(--accent-cyan)' }}>312</span>
+                <span>lette</span>
+              </div>
+              <div className="funnel-arrow">↓</div>
+              <div className="funnel-step" style={{ width: '70%', background: 'linear-gradient(90deg, rgba(247,37,133,0.2), transparent)' }}>
+                <span className="funnel-number" style={{ color: 'var(--accent-magenta)' }}>47</span>
+                <span>con risposta</span>
+              </div>
+              <div className="funnel-arrow">↓</div>
+              <div className="funnel-step" style={{ width: '55%', background: 'linear-gradient(90deg, rgba(6,214,160,0.2), transparent)' }}>
+                <span className="funnel-number" style={{ color: 'var(--accent-green)' }}>3</span>
+                <span>utili</span>
+              </div>
+            </div>
+
+            <div className="quote" style={{ borderColor: 'var(--accent-yellow)', textAlign: 'center', borderLeft: 'none', borderBottom: '3px solid var(--accent-yellow)', fontStyle: 'italic' }}>
+              Conversion rate: 0.1%. Growth hacking at its finest.
+            </div>
+          </div>
+        </div>
+
+        {/* Slide 7: Meeting */}
+        <div className={`slide slide-meeting ${currentSlide === 7 ? 'active' : ''}`}>
+          <Particles />
+          <div className="slide-content">
+            <p className="slide-label">🎯 meeting.roi</p>
+            <h2 className="slide-title" style={{ color: 'var(--accent-magenta)' }}>
+              MEETING ROI
+            </h2>
+            <div className="big-number" style={{ color: 'var(--accent-magenta)' }}>
+              <AnimatedCounter target={847} isActive={currentSlide === 7} />
+            </div>
+            <p className="big-number-label">ore in meeting</p>
+
+            <ul className="breakdown-list">
+              <li className="breakdown-item">
+                <span className="breakdown-value" style={{ color: 'var(--accent-yellow)' }}>84%</span>
+                <div className="breakdown-bar">
+                  <BreakdownBarFill width={84} isActive={currentSlide === 7} color="var(--accent-yellow)" />
+                </div>
+                <span style={{ fontSize: '0.75rem' }}>Meeting che potevano essere email</span>
+              </li>
+              <li className="breakdown-item">
+                <span className="breakdown-value" style={{ color: 'var(--accent-cyan)' }}>78%</span>
+                <div className="breakdown-bar">
+                  <BreakdownBarFill width={78} isActive={currentSlide === 7} color="var(--accent-cyan)" />
+                </div>
+                <span style={{ fontSize: '0.75rem' }}>Meeting che potevano essere un messaggio Teams</span>
+              </li>
+              <li className="breakdown-item">
+                <span className="breakdown-value" style={{ color: 'var(--accent-orange)' }}>65%</span>
+                <div className="breakdown-bar">
+                  <BreakdownBarFill width={65} isActive={currentSlide === 7} color="var(--accent-orange)" />
+                </div>
+                <span style={{ fontSize: '0.75rem' }}>Meeting che potevano non esistere</span>
+              </li>
+              <li className="breakdown-item">
+                <span className="breakdown-value" style={{ color: 'var(--text-secondary)' }}>[NDA]</span>
+                <div className="breakdown-bar">
+                  <BreakdownBarFill width={5} isActive={currentSlide === 7} color="var(--text-secondary)" />
+                </div>
+                <span style={{ fontSize: '0.75rem' }}>Meeting produttivi</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Slide 8: Certifications */}
+        <div className={`slide slide-certs ${currentSlide === 8 ? 'active' : ''}`}>
+          <Particles />
+          <div className="slide-content">
+            <p className="slide-label">🏅 certificazioni.2025</p>
+            <h2 className="slide-title" style={{ color: 'var(--accent-cyan)' }}>
+              CERTIFICAZIONI 2025
+            </h2>
+
+            <div className="cert-grid">
+              <div className="cert-badge">
+                <div className="cert-icon">🙄</div>
+                <div><strong>Certified Eye-Roller</strong><br />durante pitch deck</div>
+              </div>
+              <div className="cert-badge">
+                <div className="cert-icon">🥋</div>
+                <div><strong>Black Belt</strong><br />in "Sei in muto"</div>
+              </div>
+              <div className="cert-badge">
+                <div className="cert-icon">🧘</div>
+                <div><strong>Master in Annuire</strong><br />Pensando Ad Altro</div>
+              </div>
+              <div className="cert-badge">
+                <div className="cert-icon">🎓</div>
+                <div><strong>PhD</strong><br />in Procrastination</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Slide 9: Outro */}
+        <div className={`slide slide-outro ${currentSlide === 9 ? 'active' : ''}`}>
+          <Particles />
+          <div className="slide-content">
+            <p className="slide-label">🎵 La più grande lezione imparata in questo anno:</p>
+
+            <a
+              href="https://www.youtube.com/watch?v=UAGJEym15Us"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="quote"
+              style={{
+                borderColor: 'var(--accent-purple)',
+                fontSize: '1rem',
+                textAlign: 'center',
+                borderLeft: 'none',
+                borderTop: '3px solid var(--accent-purple)',
+                paddingTop: '1.5rem',
+                textDecoration: 'none',
+                display: 'block',
+                cursor: 'pointer',
+              }}
+            >
+              <em>"L'anno che sta arrivando, tra un anno passerà.<br />Io mi sto preparando, è questa la novità."</em>
+              <br /><br />
+              <span style={{ color: 'var(--text-secondary)' }}>— <strong>Lucio Dalla</strong>, che nel 1979 aveva già capito tutto</span>
+              <br />
+              <span style={{ fontSize: '0.7rem', color: 'var(--accent-purple)', marginTop: '0.5rem', display: 'inline-block' }}>▶ Ascolta su YouTube</span>
+            </a>
+
+            <h2 className="slide-title" style={{ fontSize: 'clamp(1.3rem, 5vw, 2rem)', marginTop: '2rem' }}>
+              <strong>Che il 2026 sia leggero.</strong>
+            </h2>
+
+            <p className="slide-subtitle" style={{ opacity: 1, transform: 'none', fontStyle: 'normal', lineHeight: 1.8, fontSize: '0.8rem' }}>
+              Leggero come un microservizio ben fatto.<br />
+              Leggero come un meeting cancellato.<br />
+              Leggero come quella sensazione quando il deploy va in prod al primo tentativo.
+            </p>
+
+            <div className="achievement" style={{ marginTop: '1.5rem', background: 'rgba(0,0,0,0.6)', border: '2px solid var(--accent-cyan)', padding: '1rem 1.5rem' }}>
+              <span style={{ color: 'var(--text-primary)' }}>Buon anno, e ricordati: se non l'hai postato su LinkedIn, non è mai successo. 🚀</span>
+            </div>
+
+            <a
+              href="https://www.youtube.com/watch?v=UAGJEym15Us"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="cta-random"
+            >
+              Click me — CTA totalmente a caso
+            </a>
+
+            <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '0.65rem', color: 'var(--text-secondary)', marginTop: '1.5rem', fontStyle: 'italic' }}>
+              P.S. Questo wrap-up ha un carbon footprint di circa 0,0003 kg di CO2. Prego.
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className="nav-arrows">
-        <button className="nav-arrow" onClick={prevSlide}>&#8592;</button>
-        <button className="nav-arrow" onClick={nextSlide}>&#8594;</button>
-      </div>
-
-      <div className="navigation">
-        {slides.map((slide, index) => (
+      {/* Navigation */}
+      <nav className="nav-dots">
+        {Array.from({ length: TOTAL_SLIDES }, (_, i) => (
           <button
-            key={slide.id}
-            className={`nav-dot ${index === activeSlide ? 'active' : ''}`}
-            onClick={() => setActiveSlide(index)}
-            title={slide.title}
+            key={i}
+            className={`nav-dot ${i === currentSlide ? 'active' : ''}`}
+            onClick={() => goToSlide(i)}
+            aria-label={`Go to slide ${i + 1}`}
           />
         ))}
+      </nav>
+
+      {/* Swipe Hint */}
+      <div className={`swipe-hint ${!showSwipeHint ? 'hidden' : ''}`}>
+        <span className="swipe-arrow">↓</span>
+        <span>Scorri per continuare</span>
       </div>
     </div>
   );
