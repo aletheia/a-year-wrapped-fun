@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Luca's 2025 Wrapped</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Outfit:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255,255,255,0.6);
+            --accent-cyan: #00f5d4;
+            --accent-magenta: #f72585;
+            --accent-yellow: #fee440;
+            --accent-orange: #ff6b35;
+            --accent-purple: #7b2cbf;
+            --accent-blue: #4361ee;
+            --accent-green: #06d6a0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg-dark);
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-primary);
+        }
+
+        .app-container {
+            height: 100%;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slides-wrapper {
+            height: 100%;
+            width: 100%;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .slide {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255,255,255,0.02) 2px,
+                    rgba(255,255,255,0.02) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .slide-content {
+            position: relative;
+            z-index: 2;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Slide Backgrounds */
+        .slide-intro {
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
+        }
+
+        .slide-sleep {
+            background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 50%, #415a77 100%);
+        }
+
+        .slide-breath {
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a0a2e 50%, #2d1b4e 100%);
+        }
+
+        .slide-hydration {
+            background: linear-gradient(135deg, #0a1628 0%, #0d2137 50%, #134e5e 100%);
+        }
+
+        .slide-carbon {
+            background: linear-gradient(135deg, #1a0a0a 0%, #2d1515 50%, #4a1c1c 100%);
+        }
+
+        .slide-keystroke {
+            background: linear-gradient(135deg, #0a0f0a 0%, #1a2e1a 50%, #2d4a2d 100%);
+        }
+
+        .slide-email {
+            background: linear-gradient(135deg, #1a1a0a 0%, #2e2e1a 50%, #4a4a2d 100%);
+        }
+
+        .slide-meeting {
+            background: linear-gradient(135deg, #1a0a1a 0%, #2e1a2e 50%, #4a2d4a 100%);
+        }
+
+        .slide-certs {
+            background: linear-gradient(135deg, #0a1a1a 0%, #1a2e2e 50%, #2d4a4a 100%);
+        }
+
+        .slide-outro {
+            background: linear-gradient(135deg, #0f0a1a 0%, #1e1a2e 50%, #2d2a4a 100%);
+        }
+
+        /* Typography */
+        .slide-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .slide-title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: clamp(2rem, 8vw, 4rem);
+            line-height: 1;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .slide-subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .big-number {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: clamp(3rem, 15vw, 8rem);
+            line-height: 1;
+            margin: 1rem 0;
+            opacity: 0;
+            transform: scale(0.5);
+        }
+
+        .big-number-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            opacity: 0;
+        }
+
+        .quote {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            padding: 1rem;
+            border-left: 3px solid currentColor;
+            text-align: left;
+            margin: 1.5rem 0;
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .achievement {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 0.75rem 1.25rem;
+            border-radius: 100px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            margin-top: 1rem;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            opacity: 0;
+        }
+
+        .stat-item {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            text-align: left;
+        }
+
+        .stat-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            margin: 1rem 0;
+            opacity: 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 100px;
+            width: 0;
+            transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Breakdown List */
+        .breakdown-list {
+            list-style: none;
+            margin: 1.5rem 0;
+            text-align: left;
+            opacity: 0;
+        }
+
+        .breakdown-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        .breakdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .breakdown-value {
+            font-weight: 700;
+            min-width: 60px;
+        }
+
+        .breakdown-bar {
+            flex: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .breakdown-bar-fill {
+            height: 100%;
+            border-radius: 100px;
+            width: 0;
+            transition: width 1s ease-out;
+        }
+
+        /* Funnel */
+        .funnel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+            opacity: 0;
+        }
+
+        .funnel-step {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .funnel-step:nth-child(1) { width: 100%; }
+        .funnel-step:nth-child(2) { width: 85%; }
+        .funnel-step:nth-child(3) { width: 70%; }
+        .funnel-step:nth-child(4) { width: 55%; }
+
+        .funnel-arrow {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+
+        .funnel-number {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Certifications */
+        .cert-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+            opacity: 0;
+        }
+
+        .cert-badge {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            text-align: center;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .cert-badge:hover {
+            transform: scale(1.05);
+            background: rgba(255,255,255,0.1);
+        }
+
+        a.quote:hover {
+            transform: scale(1.02);
+            border-color: var(--accent-cyan) !important;
+        }
+
+        .cta-random {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 1rem 2rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--bg-dark);
+            background: linear-gradient(135deg, var(--accent-yellow), var(--accent-orange));
+            border: none;
+            border-radius: 100px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 20px rgba(254, 228, 64, 0.3);
+            animation: pulse-cta 2s infinite;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .cta-random:hover {
+            transform: scale(1.1) translateY(-2px);
+            box-shadow: 0 8px 30px rgba(254, 228, 64, 0.5);
+        }
+
+        .slide.active .cta-random {
+            animation: slideUp 0.6s 0.6s forwards cubic-bezier(0.16, 1, 0.3, 1), pulse-cta 2s 1.2s infinite;
+        }
+
+        @keyframes pulse-cta {
+            0%, 100% { box-shadow: 0 4px 20px rgba(254, 228, 64, 0.3); }
+            50% { box-shadow: 0 4px 30px rgba(254, 228, 64, 0.6); }
+        }
+
+        .cert-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Navigation */
+        .nav-dots {
+            position: fixed;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .nav-dot.active {
+            background: var(--text-primary);
+            transform: scale(1.3);
+        }
+
+        .nav-dot:hover {
+            background: rgba(255,255,255,0.5);
+        }
+
+        /* Swipe hint */
+        .swipe-hint {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 100;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .swipe-hint.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .swipe-arrow {
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        /* Animations */
+        .slide.active .slide-label {
+            animation: slideUp 0.6s 0.1s forwards cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .slide.active .slide-title {
+            animation: slideUp 0.6s 0.2s forwards cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .slide.active .slide-subtitle {
+            animation: slideUp 0.6s 0.3s forwards cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .slide.active .big-number {
+            animation: scaleIn 0.8s 0.3s forwards cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .slide.active .big-number-label {
+            animation: fadeIn 0.6s 0.5s forwards;
+        }
+
+        .slide.active .quote {
+            animation: slideRight 0.6s 0.4s forwards cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .slide.active .achievement {
+            animation: slideUp 0.6s 0.5s forwards cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .slide.active .stats-grid {
+            animation: fadeIn 0.6s 0.4s forwards;
+        }
+
+        .slide.active .progress-container {
+            animation: fadeIn 0.6s 0.4s forwards;
+        }
+
+        .slide.active .breakdown-list {
+            animation: fadeIn 0.6s 0.3s forwards;
+        }
+
+        .slide.active .funnel {
+            animation: fadeIn 0.6s 0.3s forwards;
+        }
+
+        .slide.active .cert-grid {
+            animation: fadeIn 0.6s 0.3s forwards;
+        }
+
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideRight {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Glitch effect for intro */
+        .glitch {
+            position: relative;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch::before {
+            animation: glitch-1 0.3s infinite linear alternate-reverse;
+            color: var(--accent-cyan);
+            z-index: -1;
+        }
+
+        .glitch::after {
+            animation: glitch-2 0.3s infinite linear alternate-reverse;
+            color: var(--accent-magenta);
+            z-index: -2;
+        }
+
+        @keyframes glitch-1 {
+            0% { clip-path: inset(40% 0 61% 0); transform: translate(-2px, 2px); }
+            20% { clip-path: inset(92% 0 1% 0); transform: translate(1px, -1px); }
+            40% { clip-path: inset(43% 0 1% 0); transform: translate(-1px, 1px); }
+            60% { clip-path: inset(25% 0 58% 0); transform: translate(2px, -2px); }
+            80% { clip-path: inset(54% 0 7% 0); transform: translate(-2px, 1px); }
+            100% { clip-path: inset(58% 0 43% 0); transform: translate(1px, 2px); }
+        }
+
+        @keyframes glitch-2 {
+            0% { clip-path: inset(65% 0 4% 0); transform: translate(2px, -2px); }
+            20% { clip-path: inset(10% 0 85% 0); transform: translate(-1px, 1px); }
+            40% { clip-path: inset(55% 0 30% 0); transform: translate(1px, -1px); }
+            60% { clip-path: inset(1% 0 90% 0); transform: translate(-2px, 2px); }
+            80% { clip-path: inset(70% 0 15% 0); transform: translate(2px, 1px); }
+            100% { clip-path: inset(15% 0 60% 0); transform: translate(-1px, -2px); }
+        }
+
+        /* Floating particles */
+        .particles {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            animation: float 8s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Carbon breakdown specific */
+        .carbon-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            text-align: left;
+        }
+
+        .carbon-item:last-child {
+            border-bottom: none;
+        }
+
+        .carbon-value {
+            font-weight: 700;
+            min-width: 55px;
+            flex-shrink: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .nav-dots {
+                right: 0.75rem;
+            }
+
+            .slide {
+                padding: 1.5rem;
+            }
+
+            .cert-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .carbon-item {
+                font-size: 0.65rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="slides-wrapper" id="slidesWrapper">
+            <!-- Slide 0: Intro -->
+            <div class="slide slide-intro active" data-slide="0">
+                <div class="particles" id="particles-0"></div>
+                <div class="slide-content">
+                    <p class="slide-label">// 2025.wrapped()</p>
+                    <h1 class="slide-title glitch" data-text="LUCA'S 2025 WRAPPED">LUCA'S 2025 WRAPPED</h1>
+                    <p class="slide-subtitle">"Because you absolutely needed to know this"</p>
+                    <div class="achievement" style="background: linear-gradient(135deg, var(--accent-magenta), var(--accent-purple));">
+                        <span>v1.0.0 — Production Ready</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 1: Sleep -->
+            <div class="slide slide-sleep" data-slide="1">
+                <div class="particles" id="particles-1"></div>
+                <div class="slide-content">
+                    <p class="slide-label">💤 sleep.performance</p>
+                    <h2 class="slide-title" style="color: var(--accent-cyan);">SLEEP PERFORMANCE</h2>
+                    <div class="big-number" style="color: var(--accent-cyan);" data-count="2555">0</div>
+                    <p class="big-number-label">ore dormite (target: 2.920)</p>
+
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Efficienza</span>
+                            <span>87,5%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="background: var(--accent-cyan);" data-width="87.5"></div>
+                        </div>
+                    </div>
+
+                    <div class="quote" style="border-color: var(--accent-cyan);">
+                        "Ho ottimizzato il mio ciclo REM implementando un approccio event-driven al sonno. Ogni sogno è stato elaborato in modo asincrono."
+                    </div>
+
+                    <div class="achievement" style="border: 1px solid var(--accent-cyan);">
+                        <span>🏆 Svegliato PRIMA della sveglia: <strong>23 volte</strong></span>
+                    </div>
+                    <p style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.75rem;">
+                        Le altre 342? Snooze come microservizio.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Slide 2: Breath -->
+            <div class="slide slide-breath" data-slide="2">
+                <div class="particles" id="particles-2"></div>
+                <div class="slide-content">
+                    <p class="slide-label">🌬️ respiratory.analytics</p>
+                    <h2 class="slide-title" style="color: var(--accent-purple);">RESPIRATORY ANALYTICS</h2>
+                    <div class="big-number" style="color: var(--accent-purple);" data-count="7884000">0</div>
+                    <p class="big-number-label">respiri effettuati con successo</p>
+
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">Downtime</div>
+                            <div class="stat-value" style="color: var(--accent-green);">Zero</div>
+                            <div class="stat-label" style="margin-top: 0.25rem;">sul sistema respiratorio</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Uptime</div>
+                            <div class="stat-value" style="color: var(--accent-cyan);">99.999%</div>
+                            <div class="stat-label" style="margin-top: 0.25rem; font-size: 0.6rem;">(quel 0.001% è quando ho visto i prezzi delle API di OpenAI)</div>
+                        </div>
+                    </div>
+
+                    <div class="quote" style="border-color: var(--accent-purple);">
+                        <strong>Throughput medio:</strong> 15 respiri/minuto, scalabile fino a 40 durante le call con gli investitori
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3: Hydration -->
+            <div class="slide slide-hydration" data-slide="3">
+                <div class="particles" id="particles-3"></div>
+                <div class="slide-content">
+                    <p class="slide-label">💧 hydration.metrics</p>
+                    <h2 class="slide-title" style="color: var(--accent-blue);">HYDRATION METRICS</h2>
+                    <div class="big-number" style="color: var(--accent-blue);" data-count="730">0</div>
+                    <p class="big-number-label">litri d'acqua consumati</p>
+
+                    <div class="quote" style="border-color: var(--accent-blue); font-size: 0.75rem;">
+                        "Ho implementato un sistema di idratazione basato su Kubernetes. Ogni bicchiere è un pod. Il mio corpo è il cluster. Ad ogni nuovo aggiornamento devo distruggerlo e ricrearlo."
+                    </div>
+
+                    <p style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">📊 Breakdown:</p>
+
+                    <ul class="breakdown-list">
+                        <li class="breakdown-item">
+                            <span class="breakdown-value" style="color: var(--accent-cyan);">40%</span>
+                            <div class="breakdown-bar">
+                                <div class="breakdown-bar-fill" style="background: var(--accent-cyan);" data-width="40"></div>
+                            </div>
+                            <span>durante coding session</span>
+                        </li>
+                        <li class="breakdown-item">
+                            <span class="breakdown-value" style="color: var(--accent-yellow);">35%</span>
+                            <div class="breakdown-bar">
+                                <div class="breakdown-bar-fill" style="background: var(--accent-yellow);" data-width="35"></div>
+                            </div>
+                            <span>durante riunioni inutili</span>
+                        </li>
+                        <li class="breakdown-item">
+                            <span class="breakdown-value" style="color: var(--accent-magenta);">25%</span>
+                            <div class="breakdown-bar">
+                                <div class="breakdown-bar-fill" style="background: var(--accent-magenta);" data-width="25"></div>
+                            </div>
+                            <span>per mandare giù decisioni discutibili</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Slide 4: Carbon -->
+            <div class="slide slide-carbon" data-slide="4">
+                <div class="particles" id="particles-4"></div>
+                <div class="slide-content">
+                    <p class="slide-label">🌍 carbon.footprint (Working Edition)</p>
+                    <h2 class="slide-title" style="color: var(--accent-orange);">CARBON FOOTPRINT</h2>
+                    <div class="big-number" style="color: var(--accent-orange);" data-count="847">0</div>
+                    <p class="big-number-label">kg di CO2 emessi per attività lavorative</p>
+
+                    <p style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-secondary); margin: 1rem 0 0.5rem;">Di cui:</p>
+
+                    <div class="breakdown-list" style="opacity: 0;">
+                        <div class="carbon-item">
+                            <span class="carbon-value" style="color: var(--accent-orange);">312 kg</span>
+                            <span>Respiri pesanti durante ore di meeting estemporanei, non programmati, per "Hai un minuto?"</span>
+                        </div>
+                        <div class="carbon-item">
+                            <span class="carbon-value" style="color: var(--accent-yellow);">189 kg</span>
+                            <span>Sospiri durante review del codice altrui</span>
+                        </div>
+                        <div class="carbon-item">
+                            <span class="carbon-value" style="color: var(--accent-magenta);">156 kg</span>
+                            <span>Esalazioni di frustrazione verso i vendor</span>
+                        </div>
+                        <div class="carbon-item">
+                            <span class="carbon-value" style="color: var(--accent-purple);">127 kg</span>
+                            <span>Sbuffi durante "quick sync" di 90 minuti</span>
+                        </div>
+                        <div class="carbon-item">
+                            <span class="carbon-value" style="color: var(--accent-cyan);">63 kg</span>
+                            <span>Imprecazioni vaporizzate nell'etere</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 5: Keystroke -->
+            <div class="slide slide-keystroke" data-slide="5">
+                <div class="particles" id="particles-5"></div>
+                <div class="slide-content">
+                    <p class="slide-label">⌨️ keystroke.economy</p>
+                    <h2 class="slide-title" style="color: var(--accent-green);">KEYSTROKE ECONOMY</h2>
+                    <div class="big-number" style="color: var(--accent-green);">4.2M</div>
+                    <p class="big-number-label">tasti premuti</p>
+
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">TAB</div>
+                            <div class="stat-value" style="color: var(--accent-cyan);">890.000</div>
+                            <div class="stat-label" style="margin-top: 0.5rem; font-size: 0.6rem; line-height: 1.4;">(il 21% — benvenuti nell'era dell'AI, dove accettare suggerimenti è diventato il nuovo scrivere codice)</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Ctrl+Z</div>
+                            <div class="stat-value" style="color: var(--accent-magenta);">12.847</div>
+                            <div class="stat-label" style="margin-top: 0.5rem; font-style: italic;">(che poi è la storia della mia vita)</div>
+                        </div>
+                        <div class="stat-item" style="grid-column: span 2;">
+                            <div class="stat-label">Ctrl+C / Ctrl+V</div>
+                            <div class="stat-value" style="color: var(--text-secondary); font-family: 'JetBrains Mono', monospace; font-size: 1rem; font-style: italic;">classified</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 6: Email -->
+            <div class="slide slide-email" data-slide="6">
+                <div class="particles" id="particles-6"></div>
+                <div class="slide-content">
+                    <p class="slide-label">📧 email.efficiency</p>
+                    <h2 class="slide-title" style="color: var(--accent-yellow);">EMAIL EFFICIENCY</h2>
+
+                    <div class="funnel">
+                        <div class="funnel-step" style="background: linear-gradient(90deg, rgba(254,228,64,0.2), transparent);">
+                            <span class="funnel-number" style="color: var(--accent-yellow);">2.847</span>
+                            <span>email ricevute</span>
+                        </div>
+                        <div class="funnel-arrow">↓</div>
+                        <div class="funnel-step" style="background: linear-gradient(90deg, rgba(0,245,212,0.2), transparent);">
+                            <span class="funnel-number" style="color: var(--accent-cyan);">312</span>
+                            <span>lette</span>
+                        </div>
+                        <div class="funnel-arrow">↓</div>
+                        <div class="funnel-step" style="background: linear-gradient(90deg, rgba(247,37,133,0.2), transparent);">
+                            <span class="funnel-number" style="color: var(--accent-magenta);">47</span>
+                            <span>con risposta</span>
+                        </div>
+                        <div class="funnel-arrow">↓</div>
+                        <div class="funnel-step" style="background: linear-gradient(90deg, rgba(6,214,160,0.2), transparent);">
+                            <span class="funnel-number" style="color: var(--accent-green);">3</span>
+                            <span>utili</span>
+                        </div>
+                    </div>
+
+                    <div class="quote" style="border-color: var(--accent-yellow); text-align: center; border-left: none; border-bottom: 3px solid var(--accent-yellow); font-style: italic;">
+                        Conversion rate: 0.1%. Growth hacking at its finest.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 7: Meeting -->
+            <div class="slide slide-meeting" data-slide="7">
+                <div class="particles" id="particles-7"></div>
+                <div class="slide-content">
+                    <p class="slide-label">🎯 meeting.roi</p>
+                    <h2 class="slide-title" style="color: var(--accent-magenta);">MEETING ROI</h2>
+                    <div class="big-number" style="color: var(--accent-magenta);" data-count="847">0</div>
+                    <p class="big-number-label">ore in meeting</p>
+
+                    <ul class="breakdown-list">
+                        <li class="breakdown-item">
+                            <span class="breakdown-value" style="color: var(--accent-yellow);">84%</span>
+                            <div class="breakdown-bar">
+                                <div class="breakdown-bar-fill" style="background: var(--accent-yellow);" data-width="84"></div>
+                            </div>
+                            <span style="font-size: 0.75rem;">Meeting che potevano essere email</span>
+                        </li>
+                        <li class="breakdown-item">
+                            <span class="breakdown-value" style="color: var(--accent-cyan);">78%</span>
+                            <div class="breakdown-bar">
+                                <div class="breakdown-bar-fill" style="background: var(--accent-cyan);" data-width="78"></div>
+                            </div>
+                            <span style="font-size: 0.75rem;">Meeting che potevano essere un messaggio Teams</span>
+                        </li>
+                        <li class="breakdown-item">
+                            <span class="breakdown-value" style="color: var(--accent-orange);">65%</span>
+                            <div class="breakdown-bar">
+                                <div class="breakdown-bar-fill" style="background: var(--accent-orange);" data-width="65"></div>
+                            </div>
+                            <span style="font-size: 0.75rem;">Meeting che potevano non esistere</span>
+                        </li>
+                        <li class="breakdown-item">
+                            <span class="breakdown-value" style="color: var(--text-secondary);">[NDA]</span>
+                            <div class="breakdown-bar">
+                                <div class="breakdown-bar-fill" style="background: var(--text-secondary);" data-width="5"></div>
+                            </div>
+                            <span style="font-size: 0.75rem;">Meeting produttivi</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Slide 8: Certifications -->
+            <div class="slide slide-certs" data-slide="8">
+                <div class="particles" id="particles-8"></div>
+                <div class="slide-content">
+                    <p class="slide-label">🏅 certificazioni.2025</p>
+                    <h2 class="slide-title" style="color: var(--accent-cyan);">CERTIFICAZIONI 2025</h2>
+
+                    <div class="cert-grid">
+                        <div class="cert-badge">
+                            <div class="cert-icon">🙄</div>
+                            <div><strong>Certified Eye-Roller</strong><br>durante pitch deck</div>
+                        </div>
+                        <div class="cert-badge">
+                            <div class="cert-icon">🥋</div>
+                            <div><strong>Black Belt</strong><br>in "Sei in muto"</div>
+                        </div>
+                        <div class="cert-badge">
+                            <div class="cert-icon">🧘</div>
+                            <div><strong>Master in Annuire</strong><br>Pensando Ad Altro</div>
+                        </div>
+                        <div class="cert-badge">
+                            <div class="cert-icon">🎓</div>
+                            <div><strong>PhD</strong><br>in Procrastination</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 9: Outro -->
+            <div class="slide slide-outro" data-slide="9">
+                <div class="particles" id="particles-9"></div>
+                <div class="slide-content">
+                    <p class="slide-label">🎵 La più grande lezione imparata in questo anno:</p>
+
+                    <a href="https://www.youtube.com/watch?v=UAGJEym15Us" target="_blank" rel="noopener" class="quote" style="border-color: var(--accent-purple); font-size: 1rem; text-align: center; border-left: none; border-top: 3px solid var(--accent-purple); padding-top: 1.5rem; text-decoration: none; display: block; transition: transform 0.3s ease, border-color 0.3s ease; cursor: pointer;">
+                        <em>"L'anno che sta arrivando, tra un anno passerà.<br>Io mi sto preparando, è questa la novità."</em>
+                        <br><br>
+                        <span style="color: var(--text-secondary);">— <strong>Lucio Dalla</strong>, che nel 1979 aveva già capito tutto</span>
+                        <br>
+                        <span style="font-size: 0.7rem; color: var(--accent-purple); margin-top: 0.5rem; display: inline-block;">▶ Ascolta su YouTube</span>
+                    </a>
+
+                    <h2 class="slide-title" style="font-size: clamp(1.3rem, 5vw, 2rem); margin-top: 2rem;">
+                        <strong>Che il 2026 sia leggero.</strong>
+                    </h2>
+
+                    <p class="slide-subtitle" style="opacity: 1; transform: none; font-style: normal; line-height: 1.8; font-size: 0.8rem;">
+                        Leggero come un microservizio ben fatto.<br>
+                        Leggero come un meeting cancellato.<br>
+                        Leggero come quella sensazione quando il deploy va in prod al primo tentativo.
+                    </p>
+
+                    <div class="achievement" style="margin-top: 1.5rem; background: rgba(0,0,0,0.6); border: 2px solid var(--accent-cyan); padding: 1rem 1.5rem;">
+                        <span style="color: var(--text-primary);">Buon anno, e ricordati: se non l'hai postato su LinkedIn, non è mai successo. 🚀</span>
+                    </div>
+
+                    <a href="https://www.youtube.com/watch?v=UAGJEym15Us" target="_blank" rel="noopener" class="cta-random">
+                        Click me — CTA totalmente a caso
+                    </a>
+
+                    <p style="font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--text-secondary); margin-top: 1.5rem; font-style: italic;">
+                        P.S. Questo wrap-up ha un carbon footprint di circa 0,0003 kg di CO2. Prego.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="nav-dots" id="navDots"></nav>
+
+        <!-- Swipe Hint -->
+        <div class="swipe-hint" id="swipeHint">
+            <span class="swipe-arrow">↓</span>
+            <span>Scorri per continuare</span>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let currentSlide = 0;
+        const totalSlides = 10;
+        let isAnimating = false;
+        let touchStartY = 0;
+        let touchEndY = 0;
+
+        // DOM Elements
+        const slidesWrapper = document.getElementById('slidesWrapper');
+        const navDots = document.getElementById('navDots');
+        const swipeHint = document.getElementById('swipeHint');
+        const slides = document.querySelectorAll('.slide');
+
+        // Initialize navigation dots
+        function initNavDots() {
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('button');
+                dot.className = `nav-dot ${i === 0 ? 'active' : ''}`;
+                dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                dot.addEventListener('click', () => goToSlide(i));
+                navDots.appendChild(dot);
+            }
+        }
+
+        // Update navigation dots
+        function updateNavDots() {
+            const dots = navDots.querySelectorAll('.nav-dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        // Go to specific slide
+        function goToSlide(index) {
+            if (isAnimating || index === currentSlide || index < 0 || index >= totalSlides) return;
+
+            isAnimating = true;
+            currentSlide = index;
+
+            slidesWrapper.style.transform = `translateY(-${currentSlide * 100}vh)`;
+
+            // Update active states
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === currentSlide);
+            });
+
+            updateNavDots();
+
+            // Hide swipe hint after first scroll
+            if (currentSlide > 0) {
+                swipeHint.classList.add('hidden');
+            }
+
+            // Animate elements on slide
+            setTimeout(() => {
+                animateSlideElements();
+            }, 300);
+
+            setTimeout(() => {
+                isAnimating = false;
+            }, 600);
+        }
+
+        // Navigate slides
+        function nextSlide() {
+            goToSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            goToSlide(currentSlide - 1);
+        }
+
+        // Animate slide elements
+        function animateSlideElements() {
+            const activeSlide = slides[currentSlide];
+
+            // Animate counters
+            activeSlide.querySelectorAll('[data-count]').forEach(el => {
+                animateCounter(el);
+            });
+
+            // Animate progress bars
+            activeSlide.querySelectorAll('[data-width]').forEach(el => {
+                setTimeout(() => {
+                    el.style.width = el.dataset.width + '%';
+                }, 500);
+            });
+        }
+
+        // Counter animation
+        function animateCounter(element) {
+            const target = parseInt(element.dataset.count);
+            const duration = 2000;
+            const start = performance.now();
+
+            function update(currentTime) {
+                const elapsed = currentTime - start;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(eased * target);
+
+                element.textContent = current.toLocaleString('it-IT');
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+
+            requestAnimationFrame(update);
+        }
+
+        // Create particles
+        function createParticles() {
+            for (let i = 0; i < totalSlides; i++) {
+                const container = document.getElementById(`particles-${i}`);
+                if (!container) continue;
+
+                for (let j = 0; j < 15; j++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.animationDelay = Math.random() * 8 + 's';
+                    particle.style.animationDuration = (Math.random() * 4 + 6) + 's';
+                    container.appendChild(particle);
+                }
+            }
+        }
+
+        // Event Listeners
+        // Wheel event
+        document.addEventListener('wheel', (e) => {
+            if (e.deltaY > 0) {
+                nextSlide();
+            } else {
+                prevSlide();
+            }
+        }, { passive: true });
+
+        // Touch events
+        document.addEventListener('touchstart', (e) => {
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndY = e.changedTouches[0].screenY;
+            handleSwipe();
+        }, { passive: true });
+
+        function handleSwipe() {
+            const diff = touchStartY - touchEndY;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
+                }
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // Initialize
+        initNavDots();
+        createParticles();
+
+        // Initial animation
+        setTimeout(() => {
+            animateSlideElements();
+        }, 500);
+    </script>
+</body>
+</html>
